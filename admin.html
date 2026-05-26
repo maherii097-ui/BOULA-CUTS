@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>دخول المدير - BOULA CUTS</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+*{
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+font-family: 'Cairo', sans-serif;
+}
+
+html, body{
+width: 100%;
+height: 100%;
+}
+
+body{
+background: linear-gradient(135deg, #0d0d0d 0%, #1a0f2e 100%);
+display: flex;
+justify-content: center;
+align-items: center;
+color: white;
+overflow: hidden;
+}
+
+.admin-login{
+width: 100%;
+max-width: 400px;
+padding: 40px;
+background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+border-radius: 20px;
+border: 2px solid #d4af37;
+box-shadow: 0 10px 50px rgba(212, 175, 55, 0.2);
+text-align: center;
+animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp{
+from{
+opacity: 0;
+transform: translateY(30px);
+}
+to{
+opacity: 1;
+transform: translateY(0);
+}
+}
+
+.admin-login i{
+font-size: 48px;
+color: #d4af37;
+margin-bottom: 15px;
+display: block;
+}
+
+.admin-login h2{
+color: #d4af37;
+margin-bottom: 10px;
+font-size: 28px;
+}
+
+.admin-login p{
+color: #888;
+font-size: 14px;
+margin-bottom: 30px;
+}
+
+input{
+width: 100%;
+padding: 12px 15px;
+margin: 10px 0;
+border: 2px solid #d4af37;
+border-radius: 10px;
+background: rgba(31, 31, 31, 0.8);
+color: white;
+font-size: 16px;
+transition: 0.3s;
+}
+
+input:focus{
+outline: none;
+border-color: #ffeb3b;
+box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+}
+
+input::placeholder{
+color: #666;
+}
+
+button{
+width: 100%;
+padding: 12px;
+background: linear-gradient(45deg, #d4af37, #ffeb3b);
+border: none;
+border-radius: 10px;
+color: black;
+font-weight: bold;
+cursor: pointer;
+margin-top: 20px;
+transition: 0.3s;
+}
+
+button:hover{
+transform: translateY(-3px);
+box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+}
+
+button:disabled{
+opacity: 0.7;
+cursor: not-allowed;
+}
+
+.error{
+display: none;
+padding: 12px;
+background: #ff6b6b;
+border-radius: 8px;
+margin-bottom: 15px;
+color: white;
+font-weight: 600;
+}
+
+.error.show{
+display: block;
+animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake{
+0%, 100%{ transform: translateX(0); }
+25%{ transform: translateX(-5px); }
+75%{ transform: translateX(5px); }
+}
+
+.back-link{
+margin-top: 20px;
+}
+
+.back-link a{
+color: #d4af37;
+text-decoration: none;
+font-weight: 600;
+transition: 0.3s;
+}
+
+.back-link a:hover{
+color: #ffeb3b;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="admin-login">
+<i class="fas fa-lock"></i>
+<h2>لوحة المدير</h2>
+<p>BOULA CUTS - صالون حلاقة</p>
+
+<div class="error" id="errorMsg"></div>
+
+<input id="emailInput" type="email" placeholder="📧 البريد الإلكتروني">
+<input id="passInput" type="password" placeholder="🔐 كلمة المرور">
+<button id="loginBtn">🔓 دخول</button>
+
+<div class="back-link">
+<a href="index.html">← العودة للموقع</a>
+</div>
+</div>
+
+<script type="module">
+import { login } from "./firebase.js";
+
+const loginBtn = document.getElementById("loginBtn");
+const emailInput = document.getElementById("emailInput");
+const passInput = document.getElementById("passInput");
+const errorMsg = document.getElementById("errorMsg");
+
+loginBtn.addEventListener("click", async () => {
+  const email = emailInput.value.trim();
+  const pass = passInput.value.trim();
+
+  if (!email || !pass) {
+    showError("من فضلك أدخل البريد الإلكتروني وكلمة المرور");
+    return;
+  }
+
+  loginBtn.disabled = true;
+  loginBtn.textContent = "⏳ جاري التحقق...";
+
+  try {
+    await login(email, pass);
+    window.location.href = "dashboard.html";
+  } catch (err) {
+    console.error(err);
+    showError("❌ البريد الإلكتروني أو كلمة المرور غير صحيحة");
+    loginBtn.disabled = false;
+    loginBtn.textContent = "🔓 دخول";
+  }
+});
+
+function showError(msg) {
+  errorMsg.textContent = msg;
+  errorMsg.classList.add("show");
+  setTimeout(() => {
+    errorMsg.classList.remove("show");
+  }, 4000);
+}
+
+passInput.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") loginBtn.click();
+});
+</script>
+
+</body>
+</html>

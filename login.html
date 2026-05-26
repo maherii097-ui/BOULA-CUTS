@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تسجيل الدخول - BOULA CUTS</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+*{
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+font-family: 'Cairo', sans-serif;
+}
+
+html, body{
+width: 100%;
+height: 100%;
+}
+
+body{
+background: linear-gradient(135deg, #0d0d0d 0%, #1a0f2e 100%);
+display: flex;
+justify-content: center;
+align-items: center;
+color: white;
+overflow: hidden;
+}
+
+.login-container{
+width: 100%;
+max-width: 450px;
+padding: 40px;
+background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+border-radius: 20px;
+border: 2px solid #d4af37;
+box-shadow: 0 10px 50px rgba(212, 175, 55, 0.2);
+animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp{
+from{
+opacity: 0;
+transform: translateY(30px);
+}
+to{
+opacity: 1;
+transform: translateY(0);
+}
+}
+
+.logo{
+text-align: center;
+margin-bottom: 40px;
+}
+
+.logo i{
+font-size: 48px;
+color: #d4af37;
+margin-bottom: 15px;
+}
+
+.logo h1{
+font-size: 32px;
+background: linear-gradient(45deg, #d4af37, #ffeb3b);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+margin-bottom: 10px;
+}
+
+.logo p{
+color: #888;
+font-size: 14px;
+}
+
+.form-group{
+margin-bottom: 20px;
+}
+
+.form-group label{
+display: block;
+margin-bottom: 8px;
+color: #d4af37;
+font-weight: 600;
+}
+
+.form-group input{
+width: 100%;
+padding: 12px 15px;
+border: 2px solid #d4af37;
+border-radius: 10px;
+background: rgba(31, 31, 31, 0.8);
+color: white;
+font-size: 16px;
+transition: 0.3s;
+}
+
+.form-group input:focus{
+outline: none;
+border-color: #ffeb3b;
+box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+}
+
+.form-group input::placeholder{
+color: #666;
+}
+
+.login-btn{
+width: 100%;
+padding: 15px;
+background: linear-gradient(45deg, #d4af37, #ffeb3b);
+color: black;
+border: none;
+border-radius: 10px;
+font-weight: 700;
+font-size: 16px;
+cursor: pointer;
+transition: 0.3s;
+margin-top: 30px;
+}
+
+.login-btn:hover{
+transform: translateY(-3px);
+box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+}
+
+.login-btn:disabled{
+opacity: 0.7;
+cursor: not-allowed;
+}
+
+.back-link{
+text-align: center;
+margin-top: 20px;
+}
+
+.back-link a{
+color: #d4af37;
+text-decoration: none;
+font-weight: 600;
+transition: 0.3s;
+}
+
+.back-link a:hover{
+color: #ffeb3b;
+text-decoration: underline;
+}
+
+.error-msg{
+display: none;
+padding: 12px;
+background: #ff6b6b;
+border-radius: 8px;
+margin-bottom: 20px;
+color: white;
+font-weight: 600;
+text-align: center;
+}
+
+.error-msg.show{
+display: block;
+animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake{
+0%, 100%{ transform: translateX(0); }
+25%{ transform: translateX(-5px); }
+75%{ transform: translateX(5px); }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="login-container">
+<div class="logo">
+<i class="fas fa-scissors"></i>
+<h1>BOULA CUTS</h1>
+<p>لوحة التحكم الإدارية</p>
+</div>
+
+<div class="error-msg" id="errorMsg"></div>
+
+<form>
+<div class="form-group">
+<label for="email">📧 البريد الإلكتروني</label>
+<input type="email" id="email" placeholder="أدخل بريدك الإلكتروني" required>
+</div>
+
+<div class="form-group">
+<label for="pass">🔐 كلمة المرور</label>
+<input type="password" id="pass" placeholder="أدخل كلمة المرور" required>
+</div>
+
+<button type="button" class="login-btn" id="loginBtn">🔓 تسجيل الدخول</button>
+</form>
+
+<div class="back-link">
+<a href="index.html">← العودة للموقع الرئيسي</a>
+</div>
+</div>
+
+<script type="module">
+import { login } from "./firebase.js";
+
+const loginBtn = document.getElementById("loginBtn");
+const emailInput = document.getElementById("email");
+const passInput = document.getElementById("pass");
+const errorMsg = document.getElementById("errorMsg");
+
+loginBtn.addEventListener("click", async () => {
+  const email = emailInput.value.trim();
+  const pass = passInput.value.trim();
+
+  if (!email || !pass) {
+    showError("❌ من فضلك أدخل البيانات");
+    return;
+  }
+
+  try {
+    loginBtn.disabled = true;
+    loginBtn.textContent = "⏳ جاري التحقق...";
+
+    await login(email, pass);
+    window.location.href = "dashboard.html";
+  } catch (err) {
+    console.error(err);
+    showError("❌ البريد أو كلمة المرور غير صحيحة");
+    loginBtn.disabled = false;
+    loginBtn.textContent = "🔓 تسجيل الدخول";
+  }
+});
+
+// Support Enter key
+passInput.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") loginBtn.click();
+});
+
+function showError(msg) {
+  errorMsg.textContent = msg;
+  errorMsg.classList.add("show");
+  setTimeout(() => {
+    errorMsg.classList.remove("show");
+  }, 4000);
+}
+</script>
+
+</body>
+</html>
